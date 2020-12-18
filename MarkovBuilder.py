@@ -35,10 +35,13 @@ class MarkovBuilder:
     def randomly_choose(self, choice_counts):
         counted_sum = 0
         count_sum = sum(choice_counts)
-        if count_sum == 0:
-            raise RuntimeError("向任何状态的转移概率都为0")
-        selected_count = random.randrange(1, count_sum + 1)
         length = len(choice_counts)
+        if count_sum == 0:
+            # 如果转移概率都是0，那么随机选一个状态
+            index = random.randrange(0, length)
+            #raise RuntimeError("向任何状态的转移概率都为0")
+            return index
+        selected_count = random.randrange(1, count_sum + 1)
         for index in range(0, length):
             counted_sum += choice_counts[index]
             if(counted_sum >= selected_count):

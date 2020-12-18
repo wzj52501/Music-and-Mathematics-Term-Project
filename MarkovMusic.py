@@ -1,4 +1,5 @@
 from MarkovBuilder import *
+from main import *
 
 class MusicMatrix:
     def __init__(self, order):
@@ -73,3 +74,8 @@ if __name__ == '__main__':
         note_list.append(next_state[0])
         interval_list.append(next_state[1])
     print(note_list)
+    print(interval_list)
+    tune = '4/4'
+    gen_stream=generate_stream(note_list, interval_list, tune)
+    save_stream(gen_stream,'test/','test')
+    
