@@ -1,5 +1,6 @@
 from MarkovBuilder import *
 from main import *
+from eval import *
 
 class MusicMatrix:
     def __init__(self, order):
@@ -13,10 +14,10 @@ class MusicMatrix:
 	        for c in range(7):
 	        	note=chr(c+ord('A'))
 	        	self.note_list.append(note+str(level))
-	        	self.note_list.append(note+str(level)+'+')
-	        	self.note_list.append(note+str(level)+'++')
-	        	self.note_list.append(note+str(level)+'#')
-	        	self.note_list.append(note+str(level)+'##')
+	        	self.note_list.append(note+'-'+str(level))
+	        	self.note_list.append(note+'--'+str(level))
+	        	self.note_list.append(note+'#'+str(level))
+	        	self.note_list.append(note+'##'+str(level))
 
         print(self.note_list)
         self.interval_list = ["whole", "half", "quarter", "eighth", "16th", "32nd", "64th"]
@@ -58,8 +59,9 @@ class MusicGenerator:
         return next_state
 
 if __name__ == '__main__':
-    note_list = ['E4','G4','G4','G4', 'E4','A4','A4','B4','A4', 'A4','G4','C5','C5','C5','A4','C5','A4','G4']
-    interval_list = ['eighth','eighth','quarter','eighth','eighth','eighth','eighth','eighth','eighth','eighth','eighth','quarter','eighth', 'eighth','quarter','eighth','eighth','half']
+    note_list = ['G4','B-4','A4','B-4', 'G4','D4','A4','F#4', 'D4','G4','E-4','C4','A3', 'D4','B-3', 'G3', 'C4', 'A3', 'D4', 'B-3','A3','G3']
+    interval_list = ['quarter','eighth','eighth','quarter','eighth','eighth','quarter','eighth','eighth','half', 'quarter','eighth','eighth','quarter','eighth','eighth','eighth','eighth','quarter','quarter','eighth','eighth']
+    tune = '4/4'
 
     order = 1
     # 这部分负责训练一个markov matrix
@@ -78,15 +80,21 @@ if __name__ == '__main__':
     # 初始值需要传order个note和interval，order是Markov Chain的阶数
     generator = MusicGenerator(markov_instance, note_list[:order], interval_list[:order])
     
+    note_gen=[]
+    interval_gen=[]
     for i in range(0,100):
         #不断调用generator的next_state方法获取下一个音符
         next_state = generator.next_state()
-        note_list.append(next_state[0])
-        interval_list.append(next_state[1])
-    print(note_list)
-    print(interval_list)
-    tune = '2/4'
-    gen_stream=generate_stream(note_list, interval_list, tune)
+        note_gen.append(next_state[0])
+        interval_gen.append(next_state[1])
+    print(note_gen)
+    print(interval_gen)
+    print(evaluate(note_gen,interval_gen,note_list,interval_list))
+    
+    gen_stream=generate_stream(note_gen, interval_gen, tune)
     gen_stream.show('midi')
     save_stream(gen_stream,'test/','music8')
+
+    ori_stream=generate_stream(note_list, interval_list, tune)
+    save_stream(ori_stream,'test/','orimusic8')
     
