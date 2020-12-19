@@ -40,18 +40,23 @@ class MusicMatrix:
         return self.state_markov_matrix.next_value(list(zip(from_note, from_interval)))
 
     def get_matrix(self):
-        prob_matrix = np.ndarray(self.state_markov_matrix.matrix.copy(), dtype = np.float)
+        prob_matrix = self.state_markov_matrix.matrix.astype(float)
         state_num = len(self.state_list)
-        enum(state_num, prob_matrix)
+        self.previous_state_cnt = np.array(self.state_markov_matrix.previous_state, dtype=float)
+        self.previous_state_cnt = self.previous_state_cnt/np.sum(self.previous_state_cnt)
+        self.enum(state_num, 0, prob_matrix)
+        return prob_matrix
+
     def enum(self, state_num, depth, matrix):
         if depth == self.order:
             # 如果所有转移概率都是0
             if np.sum(matrix) == 0:
-                print(matrix)
-                matrix = np.ndarray(self.state_markov_matrix.previous_state.copy(), dtype=float32)
-                matrix = matrix/np.sum(matrix)
+                for i in range(state_num):
+                    matrix[i] = self.previous_state_cnt[i]
             else:
-                matrix = matrix/np.sum(matrix)
+                s = np.sum(matrix)
+                for i in range(state_num):
+                    matrix[i] = matrix[i]/s
             return
         else:
             for i in range(state_num):
@@ -86,8 +91,10 @@ if __name__ == '__main__':
         #每次向markov_instance中丢一个note和interval，这些全部用来训练markov chain
         markov_instance.add(note_list[i], interval_list[i])
     
+    #获取概率转移矩阵
     print(markov_instance.get_matrix())
-
+    #获取计数矩阵，和转移矩阵有两个区别，一个是计数矩阵没有归一化，一个是全0行在转移矩阵中被设置为了按照之前state出现的次数产生概率
+    print(markov_instance.state_markov_matrix.matrix)
     # 这部分负责生成一个新的音乐，先用之前训练好的markov_instance初始化generator,并为其传入初始值
     # 初始值需要传order个note和interval，order是Markov Chain的阶数
     generator = MusicGenerator(markov_instance, note_list[:order], interval_list[:order])
