@@ -5,7 +5,11 @@ class MarkovBuilder:
         self.value_lookup = {}
         self.reverse_value_lookup = value_list
         self.order = order
+        # 是否是第一次调用
+        self.first = 1
         value_num = len(value_list)
+        # 这里记录一下训练集中各种state总的出现次数
+        self.previous_state = [0 for i in range(value_num)]
         for i in range(0,value_num):
             self.value_lookup[value_list[i]] = i
         # 初始化转移矩阵
@@ -17,14 +21,23 @@ class MarkovBuilder:
 
         for i in range(self.order):
             matrix = matrix[value_map[from_value[i]]]
-        print("form value is ", from_value)
-        print("to value is ", to_value)
+        #print("form value is ", from_value)
+        #print("to value is ", to_value)
         matrix[value_map[to_value]] += 1
+        # 这里是对总共出现次数的计数
+        self.previous_state[value_map[to_value]] += 1
+        # 如果是第一次调用add，那么最开始的几个state也要被计入
+        if self.first:
+            for i in range(self.order):
+                self.previous_state[value_map[from_value[i]]] += 1
+            self.first = 0
 
     def next_value(self, from_value):
         value_map = self.value_lookup
+        #print(from_value)
         value_counts = self.matrix
         for i in range(self.order):
+            #print(from_value[i])
             value_counts = value_counts[value_map[from_value[i]]]
         value_index = self.randomly_choose(value_counts)
         if(value_index < 0):
@@ -37,8 +50,8 @@ class MarkovBuilder:
         count_sum = sum(choice_counts)
         length = len(choice_counts)
         if count_sum == 0:
-            # 如果转移概率都是0，那么随机选一个状态
-            index = random.randrange(0, length)
+            # 如果转移概率都是0，那么从之前出现过的状态按照出现次数随机选一个状态
+            index = self.randomly_choose(self.previous_state)
             #raise RuntimeError("向任何状态的转移概率都为0")
             return index
         selected_count = random.randrange(1, count_sum + 1)
