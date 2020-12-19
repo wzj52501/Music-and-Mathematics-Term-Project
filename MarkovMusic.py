@@ -8,7 +8,17 @@ class MusicMatrix:
         self.order = order
         self.current_note_num = 0 # 记录当前输入了几个note
         # 这里应该传入所有需要考虑到的音级，我这里只传入了例子中包含的音级，之后可以改这里就可以更改状态空间
-        self.note_list = ['C--','C','D','E','E#','F','F#','G-','G','A','A#','B']
+        self.note_list=[]
+        for level in range(3,6):
+	        for c in range(7):
+	        	note=chr(c+ord('A'))
+	        	self.note_list.append(note+str(level))
+	        	self.note_list.append(note+str(level)+'+')
+	        	self.note_list.append(note+str(level)+'++')
+	        	self.note_list.append(note+str(level)+'#')
+	        	self.note_list.append(note+str(level)+'##')
+
+        print(self.note_list)
         self.interval_list = ["whole", "half", "quarter", "eighth", "16th", "32nd", "64th"]
         self.note_markov_matrix = MarkovBuilder(self.note_list, order)
         self.interval_markov_matrix = MarkovBuilder(self.interval_list, order)
@@ -48,8 +58,8 @@ class MusicGenerator:
         return next_state
 
 if __name__ == '__main__':
-    note_list = ['C','D','F','G', 'A','G','F#','C--','D','F','A#','G-','E#']
-    interval_list = ['quarter','quarter','quarter','quarter','quarter','quarter','quarter','quarter','quarter','quarter','quarter','eighth','eighth']
+    note_list = ['E4','G4','G4','G4', 'E4','A4','A4','B4','A4', 'A4','G4','C5','C5','C5','A4','C5','A4','G4']
+    interval_list = ['eighth','eighth','quarter','eighth','eighth','eighth','eighth','eighth','eighth','eighth','eighth','quarter','eighth', 'eighth','quarter','eighth','eighth','half']
 
     order = 1
     # 这部分负责训练一个markov matrix
@@ -75,7 +85,8 @@ if __name__ == '__main__':
         interval_list.append(next_state[1])
     print(note_list)
     print(interval_list)
-    tune = '4/4'
+    tune = '2/4'
     gen_stream=generate_stream(note_list, interval_list, tune)
-    save_stream(gen_stream,'test/','test')
+    gen_stream.show('midi')
+    save_stream(gen_stream,'test/','music8')
     
