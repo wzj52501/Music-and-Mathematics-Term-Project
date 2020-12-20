@@ -19,7 +19,23 @@ def evaluate(note_gen, interval_gen, note_ori, interval_ori):
     k=m
     for i in range(k):
         result+=score[i]
-    return result
+
+    cnt=0
+    for i in range(n-1):
+        flag=1
+        for j in range(i+1,n-1):
+            if(x[i]==x[j] and x[i+1]==x[j+1]):
+                flag=0
+        if(flag):
+            cnt+=1
+    for i in range(n-2):
+        flag=1
+        for j in range(i+1,n-2):
+            if(x[i]==x[j] and x[i+2]==x[j+2]):
+                flag=0
+        if(flag):
+            cnt+=1
+    return result*cnt/n
 
 if __name__ == '__main__':
     note_list1 = ['G4','B-4','A4','B-4', 'G4','D4','A4','F#4', 'D4','G4','E-4','C4','A3', 'D4','B-3', 'G3', 'C4', 'A3', 'D4', 'B-3','A3','G3']
