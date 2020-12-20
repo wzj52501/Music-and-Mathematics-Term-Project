@@ -20,7 +20,7 @@
 
    ```python
    note_list = ['G4','F#4','G4','A4', 'B-4','A4','F4','D4', 'G4','G4','F#4','G4','A4', 'B4','A4', 'G4', 'G4']
-   	interval_list = ['quarter','quarter','quarter','quarter','half','half','half','half','half','quarter', 'quarter','quarter','quarter','half','half','half']
+   	interval_list = ['quarter','quarter','quarter','quarter','half','half','half','half','half','quarter', 'quarter','quarter','quarter','half','half','half','half']
    	tune = '3/2'
    ```
 
